@@ -7,6 +7,7 @@ colors and pieces on the board
 import pygame as p
 
 import ChessEngine
+from ChessEngine import GameState
 
 HEIGHT = WIDTH = 720
 clock = p.time.Clock()
@@ -48,11 +49,22 @@ def main():
                 else:
                     selectedSQ = (row, col)
                     playerClicks.append(selectedSQ)
-                    print(playerClicks)
+                    # print(playerClicks)
                     # print(selectedSQ)
                 if len(playerClicks) == 2:
-
+                    move = ChessEngine.Move(playerClicks[0], playerClicks[1],gs.board)
+                    print(move.getChessNotation())
                     playerClicks = []
+                    selectedSQ = ()
+                    gs.makeMove(move)
+                    # print(gs.board)
+
+# def printBoard(board):
+#     for i in range(8):
+#         for j in range(8):
+#             print(board[i][j], end=" ")
+
+
 
 
 
