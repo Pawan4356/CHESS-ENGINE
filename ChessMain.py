@@ -1,3 +1,9 @@
+"""
+this is the main python file where pygame will be used to show the board and
+colors and pieces on the board
+"""
+
+
 import pygame as p
 
 import ChessEngine
@@ -25,17 +31,48 @@ def main():
     print(gs.board)
     loadImages()
     running = True
+    selectedSQ = ()
+    playerClicks = []
     while running:
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
+            elif e.type == p.MOUSEBUTTONDOWN:
+                location = p.mouse.get_pos()
+                col = location[0] // SQ_SIZE
+                row = location[1] // SQ_SIZE
+                if selectedSQ == (row, col):
+                    selectedSQ = ()
+                    playerClicks = []
+
+                else:
+                    selectedSQ = (row, col)
+                    playerClicks.append(selectedSQ)
+                    print(playerClicks)
+                    # print(selectedSQ)
+                if len(playerClicks) == 2:
+
+                    playerClicks = []
+
+
+
         clock.tick(MAX_FPS)
-        drawGameState(screen,gs)
+        drawGameState(screen,gs , selectedSQ)
         p.display.flip()
 
-def drawGameState(screen ,gs):
+def drawGameState(screen ,gs,selectedSQ):
     drawBoard(screen)
+    if selectedSQ != ():
+        highlightSquare(screen, selectedSQ)
     drawPieces(screen,gs.board)
+
+def highlightSquare(screen, square):
+    r, c = square
+    s = p.Surface((SQ_SIZE, SQ_SIZE))
+    s.set_alpha(100)  # Transparency
+    s.fill(p.Color("green"))
+    screen.blit(s, (c * SQ_SIZE, r * SQ_SIZE))
+
 
 def drawBoard(screen):
     colors = [p.Color("white"), p.Color("gray")]
