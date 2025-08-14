@@ -6,7 +6,7 @@ HEIGHT = WIDTH = 720
 clock = p.time.Clock()
 screen = p.display.set_mode((HEIGHT, HEIGHT))
 DIMENSION = 8
-SQ_SIZE = HEIGHT / DIMENSION
+SQ_SIZE = HEIGHT // DIMENSION
 MAX_FPS = 15
 IMAGES = {}
 
