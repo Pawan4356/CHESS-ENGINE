@@ -38,7 +38,15 @@ def main():
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
+            elif e.type == p.MOUSEWHEEL:
+                # Handle scroll events before click logic
+                if e.y > 0:  # scroll up → undo
+                    gs.undoMove()
+                    # print("Undone move notation:", gs.undoMoveLog[-1].getChessNotation())
+                elif e.y < 0:  # scroll down → redo
+                    gs.redoMove()
             elif e.type == p.MOUSEBUTTONDOWN:
+
                 location = p.mouse.get_pos()
                 col = location[0] // SQ_SIZE
                 row = location[1] // SQ_SIZE
@@ -53,13 +61,28 @@ def main():
                     # print(selectedSQ)
                 if len(playerClicks) == 2:
                     move = ChessEngine.Move(playerClicks[0], playerClicks[1],gs.board)
-                    print(move.getChessNotation())
+                    if gs.WhiteToMove == True: # prints the notation in pgn like format for example 1.e4 e5
+                        print(str(gs.moveCount) + ". " +  move.getChessNotation() + " ",end="")
+                    else:
+                        print(move.getChessNotation()+ " ", end="")
+                        gs.moveCount += 1
                     playerClicks = []
                     selectedSQ = ()
                     gs.makeMove(move)
-                    # print(gs.board)
+                    # print("Move log:", [m.getChessNotation() for m in gs.MoveLog])
+                    # print("Undo log:", [m.getChessNotation() for m in gs.undoMoveLog])
 
-# def printBoard(board):
+            # elif e.type == p.MOUSEWHEEL:
+            #     if e.y < 0:  # vertical down → undo
+            #         gs.undoMove()
+            #         selectedSQ = ()
+            #         playerClicks = []
+            #     elif e.y > 0:  # horizontal left → redo
+            #         gs.redoMove()
+            #         selectedSQ = ()
+            #         playerClicks = []
+
+        # def printBoard(board):
 #     for i in range(8):
 #         for j in range(8):
 #             print(board[i][j], end=" ")
