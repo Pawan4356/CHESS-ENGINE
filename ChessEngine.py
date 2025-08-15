@@ -71,9 +71,11 @@ class Move():
     def getChessNotation(self):
         piece = self.Board[self.startRow][self.startCol]
         pieceCaptured = self.Board[self.endRow][self.endCol]
-        pieces = ["B","R","N","Q"]
+        pieces = ["B","R","N","Q","K"]
         pawn = "P"
         if pieceCaptured !=  "--":
+            if piece[1] in pieces:
+                return piece[1] + "x" + self.getRankFiles(self.endRow,self.endCol)
             return self.getRanks(self.startCol) + "x" + self.getRankFiles(self.endRow,self.endCol)
         for C in pieces:
             if(piece[1] == C):

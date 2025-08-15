@@ -22,7 +22,7 @@ IMAGES = {}
 def loadImages():
     pieces = ['wP', 'wK' ,'wQ' , 'wN' , 'wB' , 'wR' , 'bP' , 'bK' , 'bQ' , 'bN' , 'bB' , 'bR' ]
     for piece in pieces:
-        IMAGES[piece] = p.transform.scale(p.image.load("images/" +piece +".png"),(SQ_SIZE,SQ_SIZE))
+        IMAGES[piece] = p.transform.scale(p.image.load("images/" +piece +".png"),(SQ_SIZE,SQ_SIZE)).convert_alpha()
 def main():
     p.init()
     screen = p.display.set_mode((WIDTH,HEIGHT) , p.RESIZABLE)
@@ -38,7 +38,7 @@ def main():
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
-            elif e.type == p.MOUSEWHEEL:
+            elif e.type == p.MOUSEWHEEL or e.type == p.KEYDOWN:
                 # Handle scroll events before click logic
                 if e.y > 0:  # scroll up → undo
                     gs.undoMove()
