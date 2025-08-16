@@ -1,5 +1,5 @@
 """
-this is the main python file where pygame will be used to show the board and
+This is the main python file where pygame will be used to show the board and
 colors and pieces on the board
 """
 
