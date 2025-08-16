@@ -76,6 +76,7 @@ class GameState:
                         self.getAllBishopMoves(r,c,moves)
                     elif piece == 'K':
                         self.getAllKingMoves(r,c,moves)
+
     """
     calculates possible moves for given piece
     """
@@ -97,7 +98,7 @@ class GameState:
 
 
 class Move():
-    def __init__(self, startSQ, endSQ,Board):
+    def __init__(self, startSQ, endSQ,Board,WhiteToMove):
         self.startRow = startSQ[0]
         self.startCol = startSQ[1]
         self.endRow = endSQ[0]
@@ -105,6 +106,7 @@ class Move():
         self.Board = Board
         self.pieceMoved = Board[self.startRow][self.startCol]
         self.pieceCaptured = Board[self.endRow][self.endCol]
+        self.WhiteToMove = WhiteToMove
         if Board[self.startRow][self.startCol] ==  "--":
             return
 
@@ -114,23 +116,23 @@ class Move():
     filesToCols = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
     colsToFiles = {v: k for k, v in filesToCols.items()}
     def getChessNotation(self):
-        piece = self.Board[self.startRow][self.startCol]
         pieceMoved = self.Board[self.startRow][self.startCol]
         pieceCaptured = self.Board[self.endRow][self.endCol]
         pieces = ["B","R","N","Q","K"]
         pawn = "P"
-        if pieceCaptured and pieceMoved == "--":
-            return None
-        if pieceCaptured !=  "--":
-            if piece[1] in pieces:
-                return piece[1] + "x" + self.getRankFiles(self.endRow,self.endCol)
-            return self.getRanks(self.startCol) + "x" + self.getRankFiles(self.endRow,self.endCol)
-        for C in pieces:
-            if(piece[1] == C):
-                return C + self.getRankFiles(self.endRow, self.endCol)
-            if(piece[1] == pawn):
-                return self.getRankFiles(self.endRow, self.endCol)
-        return self.getRankFiles(self.startRow, self.startCol) + self.getRankFiles(self.endRow,self.endCol)
+        if (pieceMoved[0] == "w" and self.WhiteToMove == True) or(pieceCaptured[0] == "b" or  self.WhiteToMove == False): # checks if its whites move if white is moving otherwise it will print moves even tho they were not made
+            if pieceMoved == "--":  # empty squares can not move
+                return None
+            if pieceCaptured != "--": # captured pieces are denoted with x e.g. exd4
+                if pieceMoved[1] in pieces: # major pieces captured mentions thier first letter e.g. Bxd4
+                    return pieceMoved[1] + "x" + self.getRankFiles(self.endRow, self.endCol)
+                return self.getRanks(self.startCol) + "x" + self.getRankFiles(self.endRow, self.endCol) # pawn captures dont mention P it only mentions the file they were in
+            for C in pieces:
+                if pieceMoved[1] == C: #piece moves mentions their first letter in capital e.g. Bc4
+                    return C + self.getRankFiles(self.endRow, self.endCol)
+                if pieceMoved[1] == pawn: # pawn moves dont mention P e.g. e4, f5
+                    return self.getRankFiles(self.endRow, self.endCol)
+
 
     def getRankFiles(self,r,c):
         return self.colsToFiles[c] + self.rowsToRanks[r]
