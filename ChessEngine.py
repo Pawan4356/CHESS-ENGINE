@@ -22,15 +22,16 @@ class GameState:
 
     def makeMove(self, move):
         if self.board[move.startRow][move.startCol] == "--" : #empty square can not capture a piece
-            return
-        piece = self.board[move.startRow][move.startCol]
+            return False
+        piece = self.board[move.startRow][move.startCol] # White piece can not move when its not white's turn and vice versa
         if (piece[0] == 'w' and not self.WhiteToMove) or (piece[0] == 'b' and self.WhiteToMove):
-            return
+            return False
 
         self.board[move.startRow][move.startCol] = "--"
         self.board[move.endRow][move.endCol] = move.pieceMoved
         self.MoveLog.append(move)
         self.WhiteToMove = not self.WhiteToMove
+        return True
 
     def undoMove(self):
         if len(self.MoveLog) != 0:
@@ -70,9 +71,12 @@ class Move():
     colsToFiles = {v: k for k, v in filesToCols.items()}
     def getChessNotation(self):
         piece = self.Board[self.startRow][self.startCol]
+        pieceMoved = self.Board[self.startRow][self.startCol]
         pieceCaptured = self.Board[self.endRow][self.endCol]
         pieces = ["B","R","N","Q","K"]
         pawn = "P"
+        if pieceCaptured and pieceMoved == "--":
+            return None
         if pieceCaptured !=  "--":
             if piece[1] in pieces:
                 return piece[1] + "x" + self.getRankFiles(self.endRow,self.endCol)

@@ -38,37 +38,44 @@ def main():
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
-            elif e.type == p.MOUSEWHEEL or e.type == p.KEYDOWN:
-                # Handle scroll events before click logic
-                if e.y > 0:  # scroll up → undo
+            elif e.type == p.MOUSEWHEEL:
+                if e.y > 0:  # undo
                     gs.undoMove()
-                    # print("Undone move notation:", gs.undoMoveLog[-1].getChessNotation())
-                elif e.y < 0:  # scroll down → redo
+                elif e.y < 0:  # redo
                     gs.redoMove()
+
+            elif e.type == p.KEYDOWN:
+                if e.key == p.K_z:  # Ctrl+Z style
+                    gs.undoMove()
+                elif e.key == p.K_y:
+                    gs.redoMove()
+
             elif e.type == p.MOUSEBUTTONDOWN:
+                if e.button == 1:
+                    location = p.mouse.get_pos()
+                    col = location[0] // SQ_SIZE
+                    row = location[1] // SQ_SIZE
+                    if selectedSQ == (row, col):
+                        selectedSQ = ()
+                        playerClicks = []
 
-                location = p.mouse.get_pos()
-                col = location[0] // SQ_SIZE
-                row = location[1] // SQ_SIZE
-                if selectedSQ == (row, col):
-                    selectedSQ = ()
-                    playerClicks = []
-
-                else:
-                    selectedSQ = (row, col)
-                    playerClicks.append(selectedSQ)
-                    # print(playerClicks)
-                    # print(selectedSQ)
-                if len(playerClicks) == 2:
-                    move = ChessEngine.Move(playerClicks[0], playerClicks[1],gs.board)
-                    if gs.WhiteToMove == True: # prints the notation in pgn like format for example 1.e4 e5
-                        print(str(gs.moveCount) + ". " +  move.getChessNotation() + " ",end="")
                     else:
-                        print(move.getChessNotation()+ " ", end="")
-                        gs.moveCount += 1
-                    playerClicks = []
-                    selectedSQ = ()
-                    gs.makeMove(move)
+                        selectedSQ = (row, col)
+                        playerClicks.append(selectedSQ)
+                        # print(playerClicks)
+                        # print(selectedSQ)
+                    if len(playerClicks) == 2:
+                        move = ChessEngine.Move(playerClicks[0], playerClicks[1],gs.board)
+                        notation = move.getChessNotation()
+                        if notation:
+                            if gs.WhiteToMove: # prints the notation in pgn like format for example 1.e4 e5
+                                print(str(gs.moveCount) + ". " +  notation + " ",end="")
+                            else:
+                                print(str(move.getChessNotation())+ " ", end="")
+                                gs.moveCount += 1
+                        playerClicks = []
+                        selectedSQ = ()
+                        gs.makeMove(move)
                     # print("Move log:", [m.getChessNotation() for m in gs.MoveLog])
                     # print("Undo log:", [m.getChessNotation() for m in gs.undoMoveLog])
 
