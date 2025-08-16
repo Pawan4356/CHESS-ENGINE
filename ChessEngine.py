@@ -51,6 +51,50 @@ class GameState:
             self.board[move.endRow][move.endCol] = move.pieceMoved
             self.WhiteToMove = not self.WhiteToMove
             self.MoveLog.append(move)
+    """
+    This function will check the validity of moves for example moving a piece that is blocking a check 
+    """
+    def getAllValidMoves(self):
+        return self.getAllPossibleMoves()
+    """
+    This function will consider only the moves of whose turn it is without caring about checks 
+    """
+    def getAllPossibleMoves(self):
+        moves = []
+        for r in range(len(self.board)):
+            for c in range(len(self.board[r])):
+                turn = self.board[r][c][0]
+                if(turn == 'w' and self.WhiteToMove) and (turn == 'b' and not self.WhiteToMove):
+                    piece = self.board[r][c][1]
+                    if piece == 'P':
+                        self.getAllPawnMoves(r,c,moves)
+                    elif piece == 'R':
+                        self.getAllRookMoves(r,c,moves)
+                    elif piece == 'N':
+                        self.getAllKnightMoves(r,c,moves)
+                    elif piece == 'B':
+                        self.getAllBishopMoves(r,c,moves)
+                    elif piece == 'K':
+                        self.getAllKingMoves(r,c,moves)
+    """
+    calculates possible moves for given piece
+    """
+
+    def getAllPawnMoves(self, r, c, moves):
+        pass
+
+    def getAllRookMoves(self, r, c, moves):
+        pass
+
+    def getAllKnightMoves(self, r, c, moves):
+        pass
+
+    def getAllBishopMoves(self, r, c, moves):
+        pass
+
+    def getAllKingMoves(self, r, c, moves):
+        pass
+
 
 class Move():
     def __init__(self, startSQ, endSQ,Board):
