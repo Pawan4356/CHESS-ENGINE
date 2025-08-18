@@ -1,5 +1,5 @@
 """
-This is where all the computation of legal moves and best move in position etc. will happen
+this is where all the computation of legal moves and best move in position etc. will happen
 """
 
 class GameState:
@@ -55,16 +55,15 @@ class GameState:
     This function will check the validity of moves for example moving a piece that is blocking a check 
     """
     def getAllValidMoves(self):
+        # TODO: filter moves that leave king in check
         return self.getAllPossibleMoves()
-    """
-    This function will consider only the moves of whose turn it is without caring about checks 
-    """
+
     def getAllPossibleMoves(self):
         moves = []
         for r in range(len(self.board)):
             for c in range(len(self.board[r])):
                 turn = self.board[r][c][0]
-                if(turn == 'w' and self.WhiteToMove) and (turn == 'b' and not self.WhiteToMove):
+                if(turn == 'w' and self.WhiteToMove) or (turn == 'b' and not self.WhiteToMove):
                     piece = self.board[r][c][1]
                     if piece == 'P':
                         self.getAllPawnMoves(r,c,moves)
@@ -76,13 +75,38 @@ class GameState:
                         self.getAllBishopMoves(r,c,moves)
                     elif piece == 'K':
                         self.getAllKingMoves(r,c,moves)
-
+        return moves
     """
     calculates possible moves for given piece
     """
 
     def getAllPawnMoves(self, r, c, moves):
-        pass
+        if self.WhiteToMove:  # White pawns move UP (to smaller row index)
+            if self.board[r - 1][c] == "--":  # single move
+                moves.append(Move((r, c), (r - 1, c), self.board,self.WhiteToMove))
+                if r == 6 and self.board[r - 2][c] == "--":  # double move from start
+                    moves.append(Move((r, c), (r - 2, c), self.board,self.WhiteToMove))
+            # captures
+            if c - 1 >= 0:  # capture left
+                if self.board[r - 1][c - 1][0] == "b":
+                    moves.append(Move((r, c), (r - 1, c - 1), self.board,self.WhiteToMove))
+            if c + 1 < 8:  # capture right
+                if self.board[r - 1][c + 1][0] == "b":
+                    moves.append(Move((r, c), (r - 1, c + 1), self.board,self.WhiteToMove))
+
+        else:  # Black pawns move DOWN (to larger row index)
+            if self.board[r + 1][c] == "--":  # single move
+                moves.append(Move((r, c), (r + 1, c), self.board,self.WhiteToMove))
+                if r == 1 and self.board[r + 2][c] == "--":  # double move from start
+                    moves.append(Move((r, c), (r + 2, c), self.board,self.WhiteToMove))
+            # captures
+            if c - 1 >= 0:  # capture left
+                if self.board[r + 1][c - 1][0] == "w":
+                    moves.append(Move((r, c), (r + 1, c - 1), self.board,self.WhiteToMove))
+            if c + 1 < 8:  # capture right
+                if self.board[r + 1][c + 1][0] == "w":
+                    moves.append(Move((r, c), (r + 1, c + 1), self.board,self.WhiteToMove))
+        return moves
 
     def getAllRookMoves(self, r, c, moves):
         pass
@@ -115,26 +139,33 @@ class Move():
     rowsToRanks = {v: k for k, v in rankToRows.items()}
     filesToCols = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
     colsToFiles = {v: k for k, v in filesToCols.items()}
+
     def getChessNotation(self):
         pieceMoved = self.Board[self.startRow][self.startCol]
         pieceCaptured = self.Board[self.endRow][self.endCol]
-        pieces = ["B","R","N","Q","K"]
+        pieces = ["B", "R", "N", "Q", "K"]
         pawn = "P"
-        if (pieceMoved[0] == "w" and self.WhiteToMove == True) or(pieceCaptured[0] == "b" or  self.WhiteToMove == False): # checks if its whites move if white is moving otherwise it will print moves even tho they were not made
+        if (pieceMoved[0] == "w" and self.WhiteToMove == True) or (pieceCaptured[0] == "b" or self.WhiteToMove == False):  # checks if its whites move if white is moving otherwise it will print moves even tho they were not made
             if pieceMoved == "--":  # empty squares can not move
                 return None
-            if pieceCaptured != "--": # captured pieces are denoted with x e.g. exd4
-                if pieceMoved[1] in pieces: # major pieces captured mentions thier first letter e.g. Bxd4
+            if pieceCaptured != "--":  # captured pieces are denoted with x e.g. exd4
+                if pieceMoved[1] in pieces:  # major pieces captured mentions thier first letter e.g. Bxd4
                     return pieceMoved[1] + "x" + self.getRankFiles(self.endRow, self.endCol)
-                return self.getRanks(self.startCol) + "x" + self.getRankFiles(self.endRow, self.endCol) # pawn captures dont mention P it only mentions the file they were in
+                return self.getRanks(self.startCol) + "x" + self.getRankFiles(self.endRow, self.endCol)  # pawn captures dont mention P it only mentions the file they were in
             for C in pieces:
-                if pieceMoved[1] == C: #piece moves mentions their first letter in capital e.g. Bc4
+                if pieceMoved[1] == C:  # piece moves mentions their first letter in capital e.g. Bc4
                     return C + self.getRankFiles(self.endRow, self.endCol)
-                if pieceMoved[1] == pawn: # pawn moves dont mention P e.g. e4, f5
+                if pieceMoved[1] == pawn:  # pawn moves dont mention P e.g. e4, f5
                     return self.getRankFiles(self.endRow, self.endCol)
-
 
     def getRankFiles(self,r,c):
         return self.colsToFiles[c] + self.rowsToRanks[r]
     def getRanks(self,c):
         return self.colsToFiles[c]
+
+    def __eq__(self, other):
+        if isinstance(other, Move):
+            return self.startRow == other.startRow and self.startCol == other.startCol \
+                and self.endRow == other.endRow and self.endCol == other.endCol \
+                and self.pieceMoved == other.pieceMoved
+        return False

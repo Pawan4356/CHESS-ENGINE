@@ -3,9 +3,7 @@ This is the main python file where pygame will be used to show the board and
 colors and pieces on the board
 """
 
-
 import pygame as p
-
 import ChessEngine
 from ChessEngine import GameState
 
@@ -18,95 +16,90 @@ MAX_FPS = 15
 IMAGES = {}
 
 
-
 def loadImages():
-    pieces = ['wP', 'wK' ,'wQ' , 'wN' , 'wB' , 'wR' , 'bP' , 'bK' , 'bQ' , 'bN' , 'bB' , 'bR' ]
+    pieces = ['wP', 'wK', 'wQ', 'wN', 'wB', 'wR',
+              'bP', 'bK', 'bQ', 'bN', 'bB', 'bR']
     for piece in pieces:
-        IMAGES[piece] = p.transform.scale(p.image.load("images/" +piece +".png"),(SQ_SIZE,SQ_SIZE)).convert_alpha()
+        IMAGES[piece] = p.transform.scale(
+            p.image.load("images/" + piece + ".png"),
+            (SQ_SIZE, SQ_SIZE)
+        ).convert_alpha()
+
+
 def main():
     p.init()
-    screen = p.display.set_mode((WIDTH,HEIGHT) , p.RESIZABLE)
+    screen = p.display.set_mode((WIDTH, HEIGHT), p.RESIZABLE)
     clock = p.time.Clock()
     screen.fill(p.Color("White"))
     gs = ChessEngine.GameState()
     print(gs.board)
     loadImages()
     running = True
-    selectedSQ = ()
-    playerClicks = []
+    selected_sq = ()
+    player_clicks = []
+    valid_moves = gs.getAllValidMoves()
+
     while running:
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
+
             elif e.type == p.MOUSEWHEEL:
                 if e.y > 0:  # undo
                     gs.undoMove()
+                    valid_moves = gs.getAllValidMoves()
                 elif e.y < 0:  # redo
                     gs.redoMove()
+                    valid_moves = gs.getAllValidMoves()
 
             elif e.type == p.KEYDOWN:
-                if e.key == p.K_z:  # Ctrl+Z style
+                if e.key == p.K_z:  # undo
                     gs.undoMove()
-                elif e.key == p.K_y:
+                    valid_moves = gs.getAllValidMoves()
+                elif e.key == p.K_y:  # redo
                     gs.redoMove()
+                    valid_moves = gs.getAllValidMoves()
 
             elif e.type == p.MOUSEBUTTONDOWN:
                 if e.button == 1:
                     location = p.mouse.get_pos()
                     col = location[0] // SQ_SIZE
                     row = location[1] // SQ_SIZE
-                    if selectedSQ == (row, col):
-                        selectedSQ = ()
-                        playerClicks = []
 
+                    if selected_sq == (row, col):
+                        selected_sq = ()
+                        player_clicks = []
                     else:
-                        selectedSQ = (row, col)
-                        playerClicks.append(selectedSQ)
-                        # print(playerClicks)
-                        # print(selectedSQ)
-                    if len(playerClicks) == 2:
-                        move = ChessEngine.Move(playerClicks[0], playerClicks[1],gs.board)
-                        notation = move.getChessNotation()
-                        if notation:
-                            if gs.WhiteToMove: # prints the notation in pgn like format for example 1.e4 e5
-                                print(str(gs.moveCount) + ". " +  notation + " ",end="")
-                            else:
-                                print(str(move.getChessNotation())+ " ", end="")
-                                gs.moveCount += 1
-                        playerClicks = []
-                        selectedSQ = ()
-                        gs.makeMove(move)
-                    # print("Move log:", [m.getChessNotation() for m in gs.MoveLog])
-                    # print("Undo log:", [m.getChessNotation() for m in gs.undoMoveLog])
+                        selected_sq = (row, col)
+                        player_clicks.append(selected_sq)
 
-            # elif e.type == p.MOUSEWHEEL:
-            #     if e.y < 0:  # vertical down → undo
-            #         gs.undoMove()
-            #         selectedSQ = ()
-            #         playerClicks = []
-            #     elif e.y > 0:  # horizontal left → redo
-            #         gs.redoMove()
-            #         selectedSQ = ()
-            #         playerClicks = []
+                    if len(player_clicks) == 2:
+                        move = ChessEngine.Move(player_clicks[0], player_clicks[1], gs.board,gs.WhiteToMove)
+                        if move in valid_moves:
+                            notation = move.getChessNotation()
+                            if notation:
+                                if gs.WhiteToMove:  # White move
+                                    print(str(gs.moveCount) + ". " + notation + " ", end="")
+                                else:  # Black move
+                                    print(str(notation) + " ", end="")
+                                    gs.moveCount += 1
 
-        # def printBoard(board):
-#     for i in range(8):
-#         for j in range(8):
-#             print(board[i][j], end=" ")
-
-
-
-
+                            gs.makeMove(move)
+                            valid_moves = gs.getAllValidMoves()  # <-- update directly
+                        player_clicks = []
+                        selected_sq = ()
 
         clock.tick(MAX_FPS)
-        drawGameState(screen,gs , selectedSQ)
+        drawGameState(screen, gs, selected_sq)
         p.display.flip()
 
-def drawGameState(screen ,gs,selectedSQ):
+
+def drawGameState(screen, gs, selectedSQ):
     drawBoard(screen)
     if selectedSQ != ():
         highlightSquare(screen, selectedSQ)
-    drawPieces(screen,gs.board)
+    drawPieces(screen, gs.board)
+
 
 def highlightSquare(screen, square):
     r, c = square
@@ -120,8 +113,8 @@ def drawBoard(screen):
     colors = [p.Color("white"), p.Color("gray")]
     for r in range(DIMENSION):
         for c in range(DIMENSION):
-            color = colors[((r+c)%2)]
-            p.draw.rect(screen,color, p.Rect(c*SQ_SIZE,r*SQ_SIZE,SQ_SIZE,SQ_SIZE))
+            color = colors[(r + c) % 2]
+            p.draw.rect(screen, color, p.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
 
 def drawPieces(screen, board):
@@ -130,7 +123,7 @@ def drawPieces(screen, board):
             piece = board[r][c]
             if piece != "--":
                 screen.blit(IMAGES[piece], p.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE))
-    # pass
+
 
 if __name__ == '__main__':
     main()
