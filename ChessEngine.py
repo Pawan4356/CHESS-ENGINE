@@ -1,5 +1,5 @@
 """
-this is where all the computation of legal moves and best move in position etc. will happen
+This is where all the computation of legal moves and best move in position etc. will happen
 """
 
 class GameState:
