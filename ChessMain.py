@@ -48,9 +48,13 @@ def main():
                 if e.y > 0:  # undo
                     gs.undoMove()
                     valid_moves = gs.getAllValidMoves()
+                    print([m.getChessNotation() for m in valid_moves])
+
                 elif e.y < 0:  # redo
                     gs.redoMove()
                     valid_moves = gs.getAllValidMoves()
+                    print([m.getChessNotation() for m in valid_moves])
+
 
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z:  # undo
@@ -86,27 +90,44 @@ def main():
 
                             gs.makeMove(move)
                             valid_moves = gs.getAllValidMoves()  # <-- update directly
+                            print([m.getChessNotation() for m in valid_moves])
+
                         player_clicks = []
                         selected_sq = ()
 
         clock.tick(MAX_FPS)
-        drawGameState(screen, gs, selected_sq)
+        drawGameState(screen, gs, selected_sq,valid_moves)
         p.display.flip()
 
 
-def drawGameState(screen, gs, selectedSQ):
+def drawGameState(screen, gs, selectedSQ, valid_moves):
     drawBoard(screen)
-    if selectedSQ != ():
-        highlightSquare(screen, selectedSQ)
+
+    highlightSquares(screen,gs, selectedSQ,valid_moves)
     drawPieces(screen, gs.board)
 
 
-def highlightSquare(screen, square):
-    r, c = square
-    s = p.Surface((SQ_SIZE, SQ_SIZE))
-    s.set_alpha(100)  # Transparency
-    s.fill(p.Color("green"))
-    screen.blit(s, (c * SQ_SIZE, r * SQ_SIZE))
+def highlightSquares(screen, gs, selectedSQ, valid_moves):
+    if selectedSQ != ():
+        r, c = selectedSQ
+        if gs.board[r][c][0] == ('w' if gs.WhiteToMove else 'b'):  # only highlight correct side's piece
+            # highlight selected square
+            s = p.Surface((SQ_SIZE, SQ_SIZE))
+            s.set_alpha(100)
+            s.fill(p.Color("green"))
+            screen.blit(s, (c * SQ_SIZE, r * SQ_SIZE))
+
+            # highlight all valid moves for that piece
+            for move in valid_moves:
+                if move.startRow == r and move.startCol == c:
+                    highlight = p.Surface((SQ_SIZE, SQ_SIZE))
+                    highlight.set_alpha(100)
+                    if gs.board[move.endRow][move.endCol] == "--":
+                        highlight.fill(p.Color("yellow"))  # quiet move
+                    else:
+                        highlight.fill(p.Color("red"))  # capture
+                    screen.blit(highlight, (move.endCol * SQ_SIZE, move.endRow * SQ_SIZE))
+
 
 
 def drawBoard(screen):
