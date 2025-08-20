@@ -90,7 +90,6 @@ def main():
 
                             gs.makeMove(move)
                             valid_moves = gs.getAllValidMoves()  # <-- update directly
-                            print([m.getChessNotation() for m in valid_moves])
 
                         player_clicks = []
                         selected_sq = ()

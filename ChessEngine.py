@@ -8,7 +8,7 @@ class GameState:
             ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
             ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["--", "--", "--", "--", "wR", "--", "--", "--"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
             ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
@@ -81,35 +81,139 @@ class GameState:
     """
 
     def getAllPawnMoves(self, r, c, moves):
-        if self.WhiteToMove:  # White pawns move UP (to smaller row index)
-            if self.board[r - 1][c] == "--":  # single move
-                moves.append(Move((r, c), (r - 1, c), self.board,self.WhiteToMove))
-                if r == 6 and self.board[r - 2][c] == "--":  # double move from start
-                    moves.append(Move((r, c), (r - 2, c), self.board,self.WhiteToMove))
-            # captures
-            if c - 1 >= 0:  # capture left
-                if self.board[r - 1][c - 1][0] == "b":
-                    moves.append(Move((r, c), (r - 1, c - 1), self.board,self.WhiteToMove))
-            if c + 1 < 8:  # capture right
-                if self.board[r - 1][c + 1][0] == "b":
-                    moves.append(Move((r, c), (r - 1, c + 1), self.board,self.WhiteToMove))
+        pieceColor = self.board[r][c][0]
 
-        else:  # Black pawns move DOWN (to larger row index)
-            if self.board[r + 1][c] == "--":  # single move
-                moves.append(Move((r, c), (r + 1, c), self.board,self.WhiteToMove))
-                if r == 1 and self.board[r + 2][c] == "--":  # double move from start
-                    moves.append(Move((r, c), (r + 2, c), self.board,self.WhiteToMove))
+        if pieceColor == "w":  # White pawn logic
+            if self.board[r - 1][c] == "--":  # single move
+                moves.append(Move((r, c), (r - 1, c), self.board, self.WhiteToMove))
+                if r == 6 and self.board[r - 2][c] == "--":  # double move from start
+                    moves.append(Move((r, c), (r - 2, c), self.board, self.WhiteToMove))
             # captures
-            if c - 1 >= 0:  # capture left
-                if self.board[r + 1][c - 1][0] == "w":
-                    moves.append(Move((r, c), (r + 1, c - 1), self.board,self.WhiteToMove))
-            if c + 1 < 8:  # capture right
-                if self.board[r + 1][c + 1][0] == "w":
-                    moves.append(Move((r, c), (r + 1, c + 1), self.board,self.WhiteToMove))
+            if c - 1 >= 0 and self.board[r - 1][c - 1][0] == "b":  # capture left
+                moves.append(Move((r, c), (r - 1, c - 1), self.board, self.WhiteToMove))
+            if c + 1 < 8 and self.board[r - 1][c + 1][0] == "b":  # capture right
+                moves.append(Move((r, c), (r - 1, c + 1), self.board, self.WhiteToMove))
+
+        elif pieceColor == "b":  # Black pawn logic
+            if self.board[r + 1][c] == "--":  # single move
+                moves.append(Move((r, c), (r + 1, c), self.board, self.WhiteToMove))
+                if r == 1 and self.board[r + 2][c] == "--":  # double move from start
+                    moves.append(Move((r, c), (r + 2, c), self.board, self.WhiteToMove))
+            # captures
+            if c - 1 >= 0 and self.board[r + 1][c - 1][0] == "w":  # capture left
+                moves.append(Move((r, c), (r + 1, c - 1), self.board, self.WhiteToMove))
+            if c + 1 < 8 and self.board[r + 1][c + 1][0] == "w":  # capture right
+                moves.append(Move((r, c), (r + 1, c + 1), self.board, self.WhiteToMove))
+
         return moves
 
     def getAllRookMoves(self, r, c, moves):
-        pass
+        pieceColor = self.board[r][c][0]
+        rookHitUp= False
+        rookHitDown = False
+        rookHitLeft = False
+        rookHitRight = False
+
+        if pieceColor == "w":
+            for i in range(1,8):
+                new_row = r + i # checks if the new row or col does not go beyond the edge of the board
+                new_col = c + i
+                if (new_col >= 0) and (new_col<8):
+                    if rookHitRight == False:
+                        if self.board[r][c+i] == "--":
+                            moves.append(Move((r,c),(r, c + i), self.board, self.WhiteToMove))
+
+                        if self.board[r][c+i][0] == "b":
+                            moves.append(Move((r,c),(r, c + i), self.board, self.WhiteToMove))
+                            rookHitRight = True
+                        if self.board[r][c+i][0] == "w":
+                            rookHitRight = True
+                if (new_row >= 0) and (new_row<8):
+                    if rookHitUp == False:
+                        if self.board[r + i][c] == "--":
+                            moves.append(Move((r,c),(r + i, c), self.board, self.WhiteToMove))
+
+                        if self.board[r + i][c][0] == "b":
+                            moves.append(Move((r,c),(r + i, c), self.board, self.WhiteToMove))
+                            rookHitUp = True
+                        if self.board[r + i][c][0] == "w":
+                            rookHitUp = True
+
+            for i in range(1,8):
+                new_row = r - i  # checks if the new row or col does not go beyond the edge of the board
+                new_col = c - i
+                if (new_col >= 0) and (new_col < 8):
+                    if rookHitLeft == False:
+                        if self.board[r][c - i] == "--":
+                            moves.append(Move((r, c), (r, c - i), self.board, self.WhiteToMove))
+
+                        if  self.board[r][c - i][0] == "b":
+                            moves.append(Move((r, c), (r, c - i), self.board, self.WhiteToMove))
+                            rookHitLeft = True
+                        if self.board[r][c - i][0] == "w":
+                            rookHitLeft = True
+                if (new_row >= 0) and (new_row < 8):
+                    if rookHitDown == False:
+                        if self.board[r - i][c] == "--":
+                            moves.append(Move((r,c),(r - i, c), self.board, self.WhiteToMove))
+
+                        if self.board[r - i][c][0] == "b":
+                            moves.append(Move((r,c),(r - i, c), self.board, self.WhiteToMove))
+                            rookHitDown = True
+                        if self.board[r - i][c][0] == "w":
+                            rookHitDown = True
+
+        if pieceColor == "b":
+            for i in range(1,8):
+                new_row = r + i  # checks if the new row or col does not go beyond the edge of the board
+                new_col = c + i
+                if (new_col >= 0) and (new_col < 8):
+                    if rookHitRight == False:
+                        if self.board[r][c + i] == "--":
+                            moves.append(Move((r, c), (r, c + i), self.board, self.WhiteToMove))
+
+                        if  self.board[r][c + i][0] == "w":
+                            moves.append(Move((r, c), (r, c + i), self.board, self.WhiteToMove))
+                            rookHitRight = True
+                        if self.board[r][c + i][0] == "b":
+                            rookHitRight = True
+                if (new_row >= 0) and (new_row < 8):
+                    if rookHitUp == False:
+                        if self.board[r + i][c] == "--":
+                            moves.append(Move((r, c), (r + i, c), self.board, self.WhiteToMove))
+
+                        if  self.board[r + i][c][0] == "w":
+                            moves.append(Move((r, c), (r + i, c), self.board, self.WhiteToMove))
+                            rookHitUp = True
+                        if self.board[r + i][c][0] == "b":
+                            rookHitUp = True
+
+            for i in range(1,8):
+                new_row = r - i  # checks if the new row or col does not go beyond the edge of the board
+                new_col = c - i
+                if (new_col >= 0) and (new_col < 8):
+                    if rookHitLeft == False:
+                        if self.board[r][c - i] == "--":
+                            moves.append(Move((r, c), (r, c - i), self.board, self.WhiteToMove))
+
+                        if self.board[r][c - i][0] == "w":
+                            moves.append(Move((r, c), (r, c - i), self.board, self.WhiteToMove))
+                            rookHitLeft = True
+                        if self.board[r][c - i][0] == "b":
+                            rookHitLeft = True
+
+                if (new_row >= 0) and (new_row < 8):
+                    if rookHitDown == False:
+                        if self.board[r - i][c] == "--":
+                            moves.append(Move((r, c), (r - i, c), self.board, self.WhiteToMove))
+
+                        if self.board[r - i][c][0] == "w":
+                            moves.append(Move((r, c), (r - i, c), self.board, self.WhiteToMove))
+                            rookHitDown = True
+                        if self.board[r - i][c][0] == "b":
+                            rookHitDown = True
+        return moves
+        # pass
 
     def getAllKnightMoves(self, r, c, moves):
         pass
