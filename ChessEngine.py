@@ -1,5 +1,5 @@
 """
-this is where all the computation of legal moves and best move in position etc. will happen
+This is where all the computation of legal moves and best move in position etc. will happen
 """
 
 class GameState:
@@ -23,7 +23,7 @@ class GameState:
     def makeMove(self, move):
         if self.board[move.startRow][move.startCol] == "--" : #empty square can not capture a piece
             return False
-        piece = self.board[move.startRow][move.startCol] # White piece can not move when its not white's turn and vice versa
+        piece = self.board[move.startRow][move.startCol] # White piece can not move when it's not white's turn and vice versa
         if (piece[0] == 'w' and not self.WhiteToMove) or (piece[0] == 'b' and self.WhiteToMove):
             return False
 
@@ -121,7 +121,7 @@ class GameState:
         pass
 
 
-class Move():
+class Move:
     def __init__(self, startSQ, endSQ,Board,WhiteToMove):
         self.startRow = startSQ[0]
         self.startCol = startSQ[1]
@@ -149,14 +149,15 @@ class Move():
             if pieceMoved == "--":  # empty squares can not move
                 return None
             if pieceCaptured != "--":  # captured pieces are denoted with x e.g. exd4
-                if pieceMoved[1] in pieces:  # major pieces captured mentions thier first letter e.g. Bxd4
+                if pieceMoved[1] in pieces:  # major pieces captured mentions their first letter e.g. Bxd4
                     return pieceMoved[1] + "x" + self.getRankFiles(self.endRow, self.endCol)
-                return self.getRanks(self.startCol) + "x" + self.getRankFiles(self.endRow, self.endCol)  # pawn captures dont mention P it only mentions the file they were in
+                return self.getRanks(self.startCol) + "x" + self.getRankFiles(self.endRow, self.endCol)  # pawn captures don't mention P it only mentions the file they were in
             for C in pieces:
                 if pieceMoved[1] == C:  # piece moves mentions their first letter in capital e.g. Bc4
                     return C + self.getRankFiles(self.endRow, self.endCol)
                 if pieceMoved[1] == pawn:  # pawn moves dont mention P e.g. e4, f5
                     return self.getRankFiles(self.endRow, self.endCol)
+        return None
 
     def getRankFiles(self,r,c):
         return self.colsToFiles[c] + self.rowsToRanks[r]
