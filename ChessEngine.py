@@ -8,12 +8,13 @@ class GameState:
             ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
             ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "--", "wR", "--", "--", "--"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
             ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
             ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]
         ]
+        self.MoveFunctions = {'P':self.getAllPawnMoves,'R':self.getAllRookMoves,'B':self.getAllBishopMoves,'N':self.getAllKnightMoves,'Q':self.getAllQueenMoves,'K': self.getAllKingMoves}
         self.WhiteToMove = True
         self.MoveLog = []
         self.GameOver = False
@@ -65,16 +66,7 @@ class GameState:
                 turn = self.board[r][c][0]
                 if(turn == 'w' and self.WhiteToMove) or (turn == 'b' and not self.WhiteToMove):
                     piece = self.board[r][c][1]
-                    if piece == 'P':
-                        self.getAllPawnMoves(r,c,moves)
-                    elif piece == 'R':
-                        self.getAllRookMoves(r,c,moves)
-                    elif piece == 'N':
-                        self.getAllKnightMoves(r,c,moves)
-                    elif piece == 'B':
-                        self.getAllBishopMoves(r,c,moves)
-                    elif piece == 'K':
-                        self.getAllKingMoves(r,c,moves)
+                    self.MoveFunctions[piece](r,c,moves)
         return moves
     """
     calculates possible moves for given piece
@@ -219,9 +211,64 @@ class GameState:
         pass
 
     def getAllBishopMoves(self, r, c, moves):
+        # pieceColor = self.board[r][c][0]
+        # for i in range(1,8):
+        #     new_row = r + i
+        #     new_col = c + i
+        #     new_coln = c - i
+        #     new_rown = r - i
+        #     pieceHitNorthEast = False
+        #     pieceHitSouthEast = False
+        #     pieceHitNorthWest = False
+        #     pieceHitSouthWest = False
+        #     if (new_row >= 0) and (new_row < 8) and (new_col >= 0) and (new_col < 8):
+        #         endPiece = self.board[new_row][new_col][0]
+        #
+        #
+        #         if pieceHitNorthEast == False:
+        #
+        #             if endPiece == "--":
+        #                 move.append(Move((r, c), (new_row, new_col), self.board, self.WhiteToMove))
+        #             if (endPiece == "b" and pieceColor == "w") or (endPiece=='w' and pieceColor == "b"):
+        #                 move.append(Move((r, c), (new_row, new_col), self.board, self.WhiteToMove))
+        #                 pieceHitNorthEast = True
+        #             if (endPiece == "b" and pieceColor == "w") or (endPiece=='w' and pieceColor == "b"):
+        #                 pieceHitNorthEast = True
+        #     if (new_row >= 0) and (new_row < 8) and (new_coln >= 0) and (new_coln < 8):
+        #         endPiece1 = self.board[new_row][new_coln][0]
+        #         if pieceHitNorthWest == False:
+        #             if endPiece1 == "--":
+        #                 move.append(Move((r, c), (new_row, new_coln), self.board, self.WhiteToMove))
+        #             if (endPiece1 == "b" and pieceColor == "w") or (endPiece1=='w' and pieceColor == "b"):
+        #                 move.append(Move((r, c), (new_row, new_coln), self.board, self.WhiteToMove))
+        #                 pieceHitNorthWest = True
+        #             if (endPiece1 == "b" and pieceColor == "w") or (endPiece1 =='w' and pieceColor == "b"):
+        #                 pieceHitNorthWest = True
+        #     if (new_rown >= 0) and (new_rown < 8) and (new_col >= 0) and (new_col < 8):
+        #         endPiece2 = self.board[new_rown][new_col][0]
+        #         if pieceHitSouthEast == False:
+        #             if endPiece2 == "--":
+        #                 move.append(Move((r, c), (new_rown, new_col), self.board, self.WhiteToMove))
+        #             if (endPiece2 == "b" and pieceColor == "w") or (endPiece2 == 'w' and pieceColor == "b"):
+        #                 move.append(Move((r, c), (new_rown, new_col), self.board, self.WhiteToMove))
+        #                 pieceHitSouthEast = True
+        #             if (endPiece2 == "b" and pieceColor == "w") or (endPiece2 == 'w' and pieceColor == "b"):
+        #                 pieceHitSouthEast = True
+        #     if (new_rown >= 0) and (new_rown < 8) and (new_coln >= 0) and (new_coln < 8):
+        #         endPiece3 = self.board[new_rown][new_coln][0]
+        #         if pieceHitSouthWest == False:
+        #             if endPiece3 == "--":
+        #                 move.append(Move((r, c), (new_rown, new_coln), self.board, self.WhiteToMove))
+        #             if (endPiece3 == "b" and pieceColor == "w") or (endPiece3 == 'w' and pieceColor == "b"):
+        #                 move.append(Move((r, c), (new_rown, new_coln), self.board, self.WhiteToMove))
+        #                 pieceHitSouthWest = True
+        #             if (endPiece3 == "b" and pieceColor == "w") or (endPiece3 == 'w' and pieceColor == "b"):
+        #                 pieceHitSouthWest = True
         pass
 
     def getAllKingMoves(self, r, c, moves):
+        pass
+    def getAllQueenMoves(self, r, c, moves):
         pass
 
 
