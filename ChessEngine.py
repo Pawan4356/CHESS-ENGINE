@@ -208,7 +208,44 @@ class GameState:
         # pass
 
     def getAllKnightMoves(self, r, c, moves):
-        pass
+        pieceColor = self.board[r][c][0]
+        i = 2
+        j = 1
+        if 0 <= r + i < 8 and 0 <= c + j < 8:
+            if self.board[r + i][c + j] == "--" or self.board[r + i][c + j][0] != pieceColor:
+                moves.append(Move((r, c), (r + i, c + j), self.board, self.WhiteToMove))
+
+        if 0 <= r + i < 8 and 0 <= c - j < 8:
+            if self.board[r + i][c - j] == "--" or self.board[r + i][c - j][0] != pieceColor:
+                moves.append(Move((r, c), (r + i, c - j), self.board, self.WhiteToMove))
+
+        if 0 <= r - i < 8 and 0 <= c + j < 8:
+            if self.board[r - i][c + j] == "--" or self.board[r - i][c + j][0] != pieceColor:
+                moves.append(Move((r, c), (r - i, c + j), self.board, self.WhiteToMove))
+
+        if 0 <= r - i < 8 and 0 <= c - j < 8:
+            if self.board[r - i][c - j] == "--" or self.board[r - i][c - j][0] != pieceColor:
+                moves.append(Move((r, c), (r - i, c - j), self.board, self.WhiteToMove))
+
+        if 0 <= r + j < 8 and 0 <= c + i < 8:
+            if self.board[r + j][c + i] == "--" or self.board[r + j][c + i][0] != pieceColor:
+                moves.append(Move((r, c), (r + j, c + i), self.board, self.WhiteToMove))
+
+        if 0 <= r + j < 8 and 0 <= c - i < 8:
+            if self.board[r + j][c - i] == "--" or self.board[r + j][c - i][0] != pieceColor:
+                moves.append(Move((r, c), (r + j, c - i), self.board, self.WhiteToMove))
+
+        if 0 <= r - j < 8 and 0 <= c + i < 8:
+            if self.board[r - j][c + i] == "--" or self.board[r - j][c + i][0] != pieceColor:
+                moves.append(Move((r, c), (r - j, c + i), self.board, self.WhiteToMove))
+
+        if 0 <= r - j < 8 and 0 <= c - i < 8:
+            if self.board[r - j][c - i] == "--" or self.board[r - j][c - i][0] != pieceColor:
+                moves.append(Move((r, c), (r - j, c - i), self.board, self.WhiteToMove))
+
+        return moves
+
+
 
     def getAllBishopMoves(self, r, c, moves):
         pieceColor = self.board[r][c][0]
@@ -266,11 +303,24 @@ class GameState:
                     if (endPiece3[0] == "w" and pieceColor == "w") or (endPiece3[0] == 'b' and pieceColor == "b"):
                         pieceHitSouthWest = True
 
-
+        return moves
     def getAllKingMoves(self, r, c, moves):
-        pass
+        i = 1
+        j = 1
+        directions = [(i,0),(i,j),(i,-j),(-i,j),(-i,0),(-i,-j),(0,-j),(0,j)]
+        pieceColor = self.board[r][c][0]
+        for dc,dr in directions:
+            if 0 <= r + dr < 8 and 0 <= c + dc < 8:
+                if self.board[r + dr][c + dc] == "--" or self.board[r + dr][c + dc][0] != pieceColor:
+                    moves.append(Move((r,c),(r+dr,c+dc),self.board, self.WhiteToMove))
+
+        return moves
+
+
     def getAllQueenMoves(self, r, c, moves):
-        pass
+        self.getAllRookMoves(r, c, moves)
+        self.getAllBishopMoves(r, c, moves)
+        return moves
 
 
 class Move:
