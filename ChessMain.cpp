@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <iostream>
-
+int DIMENSION = 8;
+int height = 720;
 int main(int argc, char* argv[]) {
     // 1. Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -13,8 +14,8 @@ int main(int argc, char* argv[]) {
         "SDL2 Window",                  // Title
         SDL_WINDOWPOS_CENTERED,         // X position
         SDL_WINDOWPOS_CENTERED,         // Y position
-        800,                            // Width
-        600,                            // Height
+        720,                            // Width
+        720,                            // Height
         SDL_WINDOW_SHOWN                // Flags
     );
 
@@ -47,9 +48,27 @@ int main(int argc, char* argv[]) {
         SDL_RenderClear(renderer);
 
         // 6. Draw something (a white rectangle)
-        SDL_Rect rect = {200, 150, 400, 300}; // x, y, width, height
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_RenderFillRect(renderer, &rect);
+        int SQ_size = height / DIMENSION;
+        for (int i = 0; i < DIMENSION; i++) {
+            for (int j = 0; j < DIMENSION; j++) {
+                SDL_Rect rect = {i * SQ_size, j* SQ_size, SQ_size, SQ_size}; // x, y, width, height
+                if ((i + j) % 2 == 0){
+                    SDL_SetRenderDrawColor(renderer, 238, 238, 210, 255);
+                }
+                else {
+                    SDL_SetRenderDrawColor(renderer, 118, 150, 86, 255);
+                }
+
+
+                SDL_RenderFillRect(renderer, &rect);
+            }
+        }
+
+
+
+
+
+
 
         // 7. Show what we rendered
         SDL_RenderPresent(renderer);
