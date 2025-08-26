@@ -205,7 +205,6 @@ class GameState:
                         if self.board[r - i][c][0] == "b":
                             rookHitDown = True
         return moves
-        # pass
 
     def getAllKnightMoves(self, r, c, moves):
         pieceColor = self.board[r][c][0]
