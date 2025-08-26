@@ -245,8 +245,6 @@ class GameState:
 
         return moves
 
-
-
     def getAllBishopMoves(self, r, c, moves):
         pieceColor = self.board[r][c][0]
         pieceHitNorthEast = False
@@ -304,6 +302,8 @@ class GameState:
                         pieceHitSouthWest = True
 
         return moves
+    
+    
     def getAllKingMoves(self, r, c, moves):
         i = 1
         j = 1
