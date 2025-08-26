@@ -32,7 +32,7 @@ def main():
     clock = p.time.Clock()
     screen.fill(p.Color("White"))
     gs = ChessEngine.GameState()
-    print(gs.board)
+    # print(gs.board)
     loadImages()
     running = True
     selected_sq = ()
